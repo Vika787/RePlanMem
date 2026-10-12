@@ -1,0 +1,95 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="RePlanMem — planning-guided visual keyframe memory for vision-language-action models.">
+  <title>RePlanMem · Project Page</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <header class="topbar">
+    <a class="brand" href="#top">RePlanMem</a>
+    <button class="menu-button" aria-expanded="false" aria-controls="nav">Menu</button>
+    <nav id="nav" aria-label="Page sections">
+      <a href="#video">Video</a>
+      <a href="#abstract">Abstract</a>
+      <a href="#method">Method</a>
+      <a href="#viewer">Viewer</a>
+    </nav>
+  </header>
+
+  <main id="top">
+    <section class="hero page-width">
+      <h1><span>RePlanMem</span><small>Planning-Guided Visual Keyframe Memory for Vision-Language-Action Models</small></h1>
+      <div class="authors" aria-label="Authors">
+        <span>Victoria Smelova<sup>1</sup></span><span>Daniil Kazachkov<sup>1</sup></span><span>Georgiy Kazantsev<sup>2</sup></span>
+        <span>Iuliia Tsvetkova<sup>3</sup></span><span>Egor Cherepanov<sup>1,4,5</sup></span><span>Nikita Kachaev<sup>4,5</sup></span>
+        <span>Artem Latyshev<sup>1,4,5</sup></span><span>Aleksandr I. Panov<sup>1,5</sup></span><span>Alexey K. Kovalev<sup>1</sup></span>
+      </div>
+      <div class="affiliations" aria-label="Affiliations">
+        <span><sup>1</sup>MIRAI</span><span><sup>2</sup>Independent Researcher</span><span><sup>3</sup>Central University</span><span><sup>4</sup>AXXX</span><span><sup>5</sup>CogAI Lab</span>
+      </div>
+      <div class="links">
+        <a class="button" href="assets/paper.pdf" target="_blank" rel="noreferrer">Paper ↗</a>
+        <a class="button secondary placeholder" href="" aria-disabled="true">arXiv</a>
+      </div>
+    </section>
+
+    <section id="video" class="content-section video-section">
+      <h2>Summary Video</h2>
+      <video controls playsinline preload="metadata" poster="assets/images/video-first-frame.png">
+        <source src="assets/video/replanmem-overview.mp4" type="video/mp4">
+      </video>
+    </section>
+
+    <section id="abstract" class="content-section text-section">
+      <h2>Abstract</h2>
+      <p>Long-horizon, multi-stage Vision-Language-Action (VLA) policies often require visual information that is no longer present in the current observation. Retaining the complete observation history is computationally expensive and highly redundant, motivating selective visual memory. We introduce <strong>RePlanMem-VLA</strong> (<em>Replanning-Guided Keyframe Memory for VLA</em>), which turns a policy's own plan revisions into an online memory-write signal. Under receding-horizon execution, consecutive action chunks predict some of the same future actions. RePlanMem-VLA treats unusually large disagreement between these temporally aligned predictions as evidence of a task-relevant event. We first compare 35 disagreement measures across single-task decoder-only and Flow-Matching Transformers trained from scratch, then validate the selected signals on pretrained OpenVLA-OFT and π<sub>0.5</sub> policies over MIKASA-Robo-VLA tasks. The resulting detectors achieve ROC-AUC of 0.981–0.997. We then use the selected signals in RePlanMem-VLA to trigger updates to a bounded visual memory, with a robot-masked write filter suppressing redundant frames. In the evaluated memory-retention experiments, RePlanMem-VLA preserves task-relevant observations until the later decision point in 100% of episodes. Real-robot replay data further show that event selection and redundancy suppression extend beyond simulation. These results establish plan revision as a policy-internal signal for controlling what a VLA remembers.</p>
+    </section>
+
+    <section id="method" class="content-section method-section">
+      <h2>Method</h2>
+      <figure><img src="assets/images/method-detail.png" alt="Detailed RePlanMem-VLA method diagram"><figcaption>RePlanMem-VLA overview.</figcaption></figure>
+      <div class="method-summary">
+        <p>In long-horizon manipulation, task-relevant visual information often leaves the cameras before it is needed. A policy that sees only the current frame cannot recover that cue, so we concatenate the live views with a bounded visual memory of B slots. Slots are empty at the start of an episode and are never carried across episode boundaries. The policy predicts a chunk of K actions from one observation and executes only the first H &lt; K before replanning, so consecutive chunks overlap on K−H future steps: the same intended actions, predicted before and after the new frame. Prior work treats disagreement on that overlap as noise to suppress. We read a large revision as evidence that the new observation was task-relevant and use it to trigger a memory-update proposal. The direct update rule stores the immediately preceding frame, whereas the redundancy-aware variant retains only visual states that are not already represented in memory. Figures 1 and 3 and Algorithm 1 summarize the procedure. At every query the policy first predicts a pre-write chunk from the memory available before a potential write, then overlap disagreement is converted, without gradients, into a task-calibrated surprise score and an event triggers frame selection and a memory update only when a visually novel state is found. The final action prediction is conditioned on the resulting memory state, and only this prediction receives the original supervised fine-tuning (SFT) objective. Event detection never sees expert actions, so memory writes are driven only by the policy’s own plan revisions.</p>
+      </div>
+    </section>
+
+    <section id="viewer" class="content-section viewer-section">
+      <h2>Interactive Memory Replay</h2>
+      <p class="section-note">A real successful episode: 24 policy queries, two detected events, and two memory writes.</p>
+      <div class="viewer" tabindex="0" aria-label="Interactive episode replay. Use left and right arrow keys to change query.">
+        <div class="viewer-chart">
+          <div class="chart-head"><span>Task-conditioned detector percentile</span><span class="chart-legend"><b class="legend-threshold"></b> threshold · 0.80 <b class="legend-trigger"></b> detector trigger <b class="legend-write"></b> memory changed</span></div>
+          <svg id="score-chart" viewBox="0 0 960 128" role="img" aria-label="Detector percentile: filled circles are detector triggers; outlined circles are memory changes"></svg>
+        </div>
+        <div class="viewer-grid">
+          <div class="observation-panel">
+            <div class="panel-head"><span>Current observation</span><b id="phase-label">Cue visible</b></div>
+            <div class="observation"><div class="camera-crop"><video id="query-video" src="assets/video/episode-success.mp4" poster="assets/viewer/queries/e000-q000000.png" muted playsinline preload="auto" aria-label="High-resolution camera observation for the selected query"></video></div><span id="frame-label">query 00 · step 000</span></div>
+            <div class="transport">
+              <button id="prev" aria-label="Previous query">←</button><button id="play" aria-label="Play replay">Play</button><button id="next" aria-label="Next query">→</button>
+              <input id="timeline" type="range" min="0" max="23" value="0" step="1" aria-label="Policy query">
+              <output id="query-output">00 / 23</output>
+            </div>
+          </div>
+          <aside class="inspector">
+            <div class="panel-head"><span>Event detector</span><b id="decision-label">warming up</b></div>
+            <dl><div><dt>Query</dt><dd id="query-value">0</dd></div><div><dt>Simulator step</dt><dd id="step-value">0</dd></div><div><dt>Raw score</dt><dd id="raw-value">—</dd></div><div><dt>Percentile</dt><dd id="percentile-value">—</dd></div><div><dt>Memory occupancy</dt><dd id="occupancy-value">0 / 3</dd></div><div><dt>Write filter</dt><dd>robot-masked</dd></div></dl>
+            <div class="meter"><span id="meter-fill"></span><i></i></div>
+            <h3>Visual memory</h3>
+            <div class="memory-bank">
+              <figure id="memory-one" class="memory-card empty"><div>slot 1<br><small>empty</small></div><img src="assets/viewer/memory/e000-memory-000010-0-0.png" alt="Keyframe written from step 36"><figcaption>source step 36</figcaption></figure>
+              <figure id="memory-two" class="memory-card empty"><div>slot 2<br><small>empty</small></div><img src="assets/viewer/memory/e000-memory-000022-0-0.png" alt="Keyframe written from step 84"><figcaption>source step 84</figcaption></figure>
+              <figure id="memory-three" class="memory-card empty"><div>slot 3<br><small>empty</small></div></figure>
+            </div>
+            <p id="event-explanation" class="event-explanation" hidden>The detector is collecting causal statistics before it can score plan revisions.</p>
+          </aside>
+        </div>
+      </div>
+    </section>
+  </main>
+  <script src="app.js"></script>
+</body>
+</html>
