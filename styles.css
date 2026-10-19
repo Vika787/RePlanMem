@@ -100,3 +100,15 @@ main>section:not(:first-child)::before{content:"";position:absolute;top:0;left:5
 .memory-card.newly-written{border:3px solid var(--success);box-shadow:0 0 0 4px rgba(32,134,94,.16),0 0 18px rgba(32,134,94,.3);animation:memory-write-pulse 1s ease-in-out infinite alternate}
 @keyframes memory-write-pulse{from{box-shadow:0 0 0 2px rgba(32,134,94,.12),0 0 8px rgba(32,134,94,.18)}to{box-shadow:0 0 0 5px rgba(32,134,94,.2),0 0 20px rgba(32,134,94,.38)}}
 @media(max-width:760px){main>section:not(:first-child)::before{width:calc(100% - 24px)}.viewer-grid{grid-template-columns:1fr}.viewer-chart svg{height:125px}.observation{height:210px}.memory-card{min-height:105px}}
+
+/* Citation */
+.citation-section{max-width:1000px;padding:54px 0 64px}
+.citation-heading{display:flex;align-items:flex-end;justify-content:space-between;gap:24px;margin-bottom:18px}
+.citation-heading h2{text-align:left;margin:0 0 5px}
+.citation-heading p{margin:0;color:var(--muted);font-size:14px}
+.copy-button{flex:0 0 auto;padding:9px 17px;border:1px solid var(--accent);border-radius:999px;background:var(--accent);color:#fff;font-weight:700;font-size:13px;cursor:pointer}
+.copy-button:hover{background:var(--accent-dark)}
+.bibtex-block{overflow:auto;border:1px solid #d8d4ec;border-radius:12px;background:#f7f6fb;box-shadow:var(--shadow)}
+.bibtex-block pre{margin:0;padding:22px 24px;min-width:720px;color:#34313e;font:12px/1.65 ui-monospace,SFMono-Regular,Consolas,"Liberation Mono",monospace;white-space:pre-wrap}
+.sr-only{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0}
+@media(max-width:600px){.citation-heading{align-items:flex-start;flex-direction:column}.bibtex-block pre{min-width:620px;padding:18px}.citation-section{padding-bottom:48px}}
