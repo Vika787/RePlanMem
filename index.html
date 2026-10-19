@@ -38,7 +38,7 @@
 
     <section id="video" class="content-section video-section">
       <h2>Summary Video</h2>
-      <video controls playsinline preload="metadata" poster="assets/images/video-first-frame.png">
+      <video id="summary-video" controls playsinline preload="auto">
         <source src="assets/video/replanmem-overview.mp4" type="video/mp4">
       </video>
     </section>
@@ -67,7 +67,7 @@
         <div class="viewer-grid">
           <div class="observation-panel">
             <div class="panel-head"><span>Current observation</span><b id="phase-label">Cue visible</b></div>
-            <div class="observation"><div class="camera-crop"><video id="query-video" src="assets/video/episode-success.mp4" poster="assets/viewer/queries/e000-q000000.png" muted playsinline preload="auto" aria-label="High-resolution camera observation for the selected query"></video></div><span id="frame-label">query 00 · step 000</span></div>
+            <div class="observation"><div class="camera-crop"><video id="query-video" src="assets/video/episode-success.mp4" muted playsinline preload="auto" aria-label="High-resolution camera observation for the selected query"></video></div><span id="frame-label">query 00 · step 000</span></div>
             <div class="transport">
               <button id="prev" aria-label="Previous query">←</button><button id="play" aria-label="Play replay">Play</button><button id="next" aria-label="Next query">→</button>
               <input id="timeline" type="range" min="0" max="23" value="0" step="1" aria-label="Policy query">
