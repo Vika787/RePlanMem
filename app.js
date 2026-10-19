@@ -13,6 +13,7 @@ const $ = selector => document.querySelector(selector);
 const timeline = $("#timeline");
 const viewer = $(".viewer");
 const queryVideo = $("#query-video");
+const summaryVideo = $("#summary-video");
 let current = 0;
 let timer = null;
 
@@ -61,9 +62,9 @@ function setQuery(index){
   const row=replay[current];
   timeline.value=current;
   if(queryVideo.duration){
-    const targetTime=(row.step/94)*queryVideo.duration;
-    if(typeof queryVideo.fastSeek==='function') queryVideo.fastSeek(targetTime);
-    else queryVideo.currentTime=targetTime;
+    queryVideo.pause();
+    const targetTime=Math.min((row.step/94)*queryVideo.duration,Math.max(0,queryVideo.duration-.04));
+    queryVideo.currentTime=targetTime;
   }
   $("#frame-label").textContent=`query ${String(row.query).padStart(2,'0')} · step ${String(row.step).padStart(3,'0')}`;
   $("#query-output").textContent=`${String(row.query).padStart(2,'0')} / 23`;
@@ -103,4 +104,8 @@ const menu=$(".menu-button"), nav=$("#nav");
 menu.addEventListener('click',()=>{const open=nav.classList.toggle('open');menu.setAttribute('aria-expanded',String(open))});
 nav.querySelectorAll('a').forEach(link=>link.addEventListener('click',()=>{nav.classList.remove('open');menu.setAttribute('aria-expanded','false')}));
 queryVideo.addEventListener('loadedmetadata',()=>setQuery(current));
+queryVideo.addEventListener('seeked',()=>queryVideo.pause());
+summaryVideo.addEventListener('loadeddata',()=>{
+  if(summaryVideo.currentTime===0) summaryVideo.currentTime=.01;
+},{once:true});
 setQuery(0);
