@@ -41,6 +41,7 @@
 
 /* Refined replay: compact viewport, legible chart, and native-resolution episode video */
 .video-section{background:linear-gradient(180deg,rgba(85,72,200,0) 0%,rgba(85,72,200,.018) 14%,rgba(85,72,200,.055) 50%,rgba(85,72,200,.018) 86%,rgba(85,72,200,0) 100%)}
+.video-section video{background:#fff;opacity:1;filter:none;mix-blend-mode:normal}
 .method-summary{max-width:900px;font-size:15.5px;line-height:1.68}
 .viewer-section{width:min(100% - 40px,1000px);padding:46px 0}
 .viewer-section .section-note{margin-bottom:15px;font-size:14px}
