@@ -103,6 +103,31 @@ viewer.addEventListener('keydown',event=>{if(event.key==='ArrowLeft'){event.prev
 const menu=$(".menu-button"), nav=$("#nav");
 menu.addEventListener('click',()=>{const open=nav.classList.toggle('open');menu.setAttribute('aria-expanded',String(open))});
 nav.querySelectorAll('a').forEach(link=>link.addEventListener('click',()=>{nav.classList.remove('open');menu.setAttribute('aria-expanded','false')}));
+const copyButton=$("#copy-bibtex"), copyStatus=$("#copy-status");
+copyButton.addEventListener('click',async()=>{
+  const bibtex=$("#bibtex").textContent;
+  try{
+    if(navigator.clipboard && window.isSecureContext){
+      await navigator.clipboard.writeText(bibtex);
+    }else{
+      const helper=document.createElement('textarea');
+      helper.value=bibtex;
+      helper.setAttribute('readonly','');
+      helper.style.position='fixed';
+      helper.style.opacity='0';
+      document.body.appendChild(helper);
+      helper.select();
+      document.execCommand('copy');
+      helper.remove();
+    }
+    copyButton.textContent='Copied!';
+    copyStatus.textContent='BibTeX copied to clipboard.';
+    setTimeout(()=>{copyButton.textContent='Copy BibTeX'},1600);
+  }catch(error){
+    copyButton.textContent='Select and copy';
+    copyStatus.textContent='Automatic copy was unavailable. Select the citation text and copy it manually.';
+  }
+});
 queryVideo.addEventListener('loadedmetadata',()=>setQuery(current));
 queryVideo.addEventListener('seeked',()=>queryVideo.pause());
 summaryVideo.addEventListener('loadeddata',()=>{
